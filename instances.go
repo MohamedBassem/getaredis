@@ -2,13 +2,8 @@ package getaredis
 
 import "time"
 
-type Address struct {
-	IP   string
-	port int
-}
-
 type Instance struct {
-	ID           int
+	ID           int `sql:"AUTO_INCREMENT"`
 	Name         string
 	IP           string
 	CreatedAt    time.Time
