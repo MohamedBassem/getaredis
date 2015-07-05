@@ -5,7 +5,7 @@ import "time"
 type Instance struct {
 	ID           int `sql:"AUTO_INCREMENT"`
 	Name         string
-	IP           string
+	CreatorIP    string
 	CreatedAt    time.Time
 	HostedAtIP   string
 	HostedAtPort int
