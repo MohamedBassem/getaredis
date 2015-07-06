@@ -17,6 +17,7 @@ type configuration struct {
 	Database        map[string]string `yaml:"database"`
 	DockerHost      string            `yaml:"dockerHost"`
 	MaxInstanceSize int               `yaml:"maxInstanceSize"`
+	MaxInstanceTime int               `yaml:"maxInstanceTime"`
 }
 
 type context struct {
@@ -48,5 +49,6 @@ func Init(configPath string) (*context, error) {
 		config:       *config,
 		db:           tmp2,
 	}
+	ctx.db.LogMode(true)
 	return &ctx, nil
 }

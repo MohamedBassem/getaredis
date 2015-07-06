@@ -82,3 +82,10 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	}
 	return instance, nil
 }
+
+func (ctx *context) RemoveContainer(id string) {
+	ctx.dockerClient.RemoveContainer(docker.RemoveContainerOptions{
+		ID:    id,
+		Force: true,
+	})
+}

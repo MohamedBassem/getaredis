@@ -18,7 +18,7 @@ func getAMockDockerContext() *context {
 	return ctx
 }
 
-func (ctx *context) forceRemoveContainer(id string) {
+func forceRemoveContainer(ctx *context, id string) {
 	ctx.dockerClient.RemoveContainer(docker.RemoveContainerOptions{
 		ID:    id,
 		Force: true,
@@ -40,7 +40,7 @@ func TestStartRedisInstance(t *testing.T) {
 		return
 	}
 	assert.NotEmpty(t, container.NetworkSettings.Ports["6379/tcp"], "Should have a port mapping for redis port")
-	ctx.forceRemoveContainer(container.ID)
+	forceRemoveContainer(ctx, container.ID)
 }
 
 // TODO Mock a database for testing and actually test this function
@@ -48,5 +48,5 @@ func TestNewInstance(t *testing.T) {
 	ctx, _ := Init("config.yml")
 	creatorIP, creatorHash := "192.168.1.20", "asdasdgsdasdbdfg"
 	instance, _ := ctx.NewInstance(creatorIP, creatorHash)
-	ctx.forceRemoveContainer(instance.ContainerID)
+	forceRemoveContainer(ctx, instance.ContainerID)
 }
