@@ -18,24 +18,20 @@ type Instance struct {
 	HostedAtPort string
 }
 
-func (ctx *context) generateDefaultDockerConfig() *docker.Config {
-	return &docker.Config{
-		Image:      "redis",
-		Memory:     5 * 1024 * 1024,
-		MemorySwap: -1,
-		PortSpecs:  []string{"6379:6379"},
-	}
-}
-
-func (ctx *context) generateDockerCreateConfig(name string) docker.CreateContainerOptions {
+func (ctx *context) generateRedisConfig(name, password string) docker.CreateContainerOptions {
 	return docker.CreateContainerOptions{
-		Name:   name,
-		Config: ctx.generateDefaultDockerConfig(),
+		Name: name,
+		Config: &docker.Config{
+			Image:      "redis",
+			Memory:     5 * 1024 * 1024,
+			MemorySwap: -1,
+			Cmd:        []string{"redis-server", "--requirepass", password},
+		},
 	}
 }
 
-func (ctx *context) startDockerInstance(name string) (*docker.Container, error) {
-	container, err := ctx.dockerClient.CreateContainer(ctx.generateDockerCreateConfig(name))
+func (ctx *context) startRedisInstance(name, password string) (*docker.Container, error) {
+	container, err := ctx.dockerClient.CreateContainer(ctx.generateRedisConfig(name, password))
 	if err != nil {
 		return nil, err
 	}
@@ -43,16 +39,26 @@ func (ctx *context) startDockerInstance(name string) (*docker.Container, error) 
 	if err != nil {
 		return nil, err
 	}
-	return ctx.dockerClient.InspectContainer(container.ID)
+	time.Sleep(time.Second)
+	container, err = ctx.dockerClient.InspectContainer(container.ID)
+	if err != nil || !container.State.Running {
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New("Container Failed to start")
+	}
+	return container, nil
 }
 
+// Creates a new docker instance with a random name, and returns the instance details back
 func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error) {
 	name := generateRandomString(20)
+	password := generateRandomString(20)
 	var count int
 	for ctx.db.Where("name = ?", name).Count(&count); count != 0; name = generateRandomString(20) {
 		// Keep Trying!
 	}
-	container, err := ctx.startDockerInstance(name)
+	container, err := ctx.startRedisInstance(name, password)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +76,7 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	}
 	return instance, nil
 }
+
 func (ctx *context) ListIntances() []Instance {
 	instanceList := make([]Instance, 0)
 	return instanceList
