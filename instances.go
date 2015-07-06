@@ -23,7 +23,7 @@ func (ctx *context) generateRedisConfig(name, password string) docker.CreateCont
 		Name: name,
 		Config: &docker.Config{
 			Image:      "redis",
-			Memory:     5 * 1024 * 1024,
+			Memory:     int64(ctx.config.MaxInstanceSize) * 1024 * 1024,
 			MemorySwap: -1,
 			Cmd:        []string{"redis-server", "--requirepass", password},
 		},
