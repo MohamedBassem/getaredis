@@ -37,13 +37,17 @@ func Init(configPath string) (*context, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Starting docker connection
 	tmp, _ := docker.NewClient(config.DockerHost)
 	databaseHost := fmt.Sprintf("%v:%v@/%v?charset=utf8&parseTime=True&loc=Local", config.Database["user"], config.Database["password"], config.Database["dbname"])
+
+	// Starting mysql connection
 	tmp2, err := gorm.Open("mysql", databaseHost)
 	if err != nil {
 		return nil, err
 	}
 	tmp2.AutoMigrate(&Instance{})
+
 	ctx := context{
 		dockerClient: *tmp,
 		config:       *config,
