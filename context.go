@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/fsouza/go-dockerclient"
+	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -16,6 +17,8 @@ import (
 type configuration struct {
 	Database        map[string]string `yaml:"database"`
 	DockerHost      string            `yaml:"dockerHost"`
+	RedisAddress    string            `yaml:"redisAddress"`
+	RedisPassword   string            `yaml:"redisPassword"`
 	MaxInstanceSize int               `yaml:"maxInstanceSize"`
 	MaxInstanceTime int               `yaml:"maxInstanceTime"`
 }
@@ -23,6 +26,7 @@ type configuration struct {
 type context struct {
 	dockerClient docker.Client
 	db           gorm.DB
+	redis        redis.Conn
 	config       configuration
 }
 
@@ -48,11 +52,21 @@ func Init(configPath string) (*context, error) {
 	}
 	tmp2.AutoMigrate(&Instance{})
 
+	// Starting redis connection
+	tmp3, err := redis.Dial("tcp", config.RedisAddress)
+	if err != nil {
+		return nil, err
+	}
+	tmp3.Do("AUTH", config.RedisPassword)
+
 	ctx := context{
 		dockerClient: *tmp,
 		config:       *config,
 		db:           tmp2,
+		redis:        tmp3,
 	}
+
+	// TODO : Remove this line
 	ctx.db.LogMode(true)
 	return &ctx, nil
 }
