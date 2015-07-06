@@ -30,7 +30,7 @@ func TestStartRedisInstance(t *testing.T) {
 	ctx := getAMockDockerContext()
 	containerName := generateRandomString(20)
 	password := generateRandomString(20)
-	container, err := ctx.startRedisInstance(containerName, password)
+	container, err := startRedisInstance(ctx, containerName, password)
 	if !assert.NoError(t, err, "Starting docker container should not return an Error.") {
 		return
 	}

@@ -21,7 +21,7 @@ type Instance struct {
 	ContainerID  string
 }
 
-func (ctx *context) generateRedisConfig(name, password string) docker.CreateContainerOptions {
+func generateRedisConfig(ctx *context, name, password string) docker.CreateContainerOptions {
 	return docker.CreateContainerOptions{
 		Name: name,
 		Config: &docker.Config{
@@ -33,8 +33,8 @@ func (ctx *context) generateRedisConfig(name, password string) docker.CreateCont
 	}
 }
 
-func (ctx *context) startRedisInstance(name, password string) (*docker.Container, error) {
-	container, err := ctx.dockerClient.CreateContainer(ctx.generateRedisConfig(name, password))
+func startRedisInstance(ctx *context, name, password string) (*docker.Container, error) {
+	container, err := ctx.dockerClient.CreateContainer(generateRedisConfig(ctx, name, password))
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	for ctx.db.Model(&Instance{}).Where(&Instance{Name: name}).Count(&count); count != 0; name = generateRandomString(20) {
 		// Keep Trying!
 	}
-	container, err := ctx.startRedisInstance(name, password)
+	container, err := startRedisInstance(ctx, name, password)
 	if err != nil {
 		return nil, err
 	}
