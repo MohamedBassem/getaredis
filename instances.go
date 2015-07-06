@@ -16,6 +16,9 @@ type Instance struct {
 	CreatedAt    time.Time
 	HostedAtIP   string
 	HostedAtPort string
+	Password     string `sql:"-"` // Don't Store passwords in the database
+	Running      bool
+	ContainerID  string
 }
 
 func (ctx *context) generateRedisConfig(name, password string) docker.CreateContainerOptions {
@@ -55,7 +58,7 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	name := generateRandomString(20)
 	password := generateRandomString(20)
 	var count int
-	for ctx.db.Where("name = ?", name).Count(&count); count != 0; name = generateRandomString(20) {
+	for ctx.db.Model(&Instance{}).Where(&Instance{Name: name}).Count(&count); count != 0; name = generateRandomString(20) {
 		// Keep Trying!
 	}
 	container, err := ctx.startRedisInstance(name, password)
@@ -69,6 +72,9 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 		CreatedAt:    time.Now(),
 		HostedAtIP:   container.NetworkSettings.IPAddress,
 		HostedAtPort: container.NetworkSettings.Ports["6379/tcp"][0].HostPort,
+		Password:     password,
+		Running:      true,
+		ContainerID:  container.ID,
 	}
 	ctx.db.Create(instance)
 	if ctx.db.NewRecord(instance) {
