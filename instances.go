@@ -76,8 +76,3 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	}
 	return instance, nil
 }
-
-func (ctx *context) ListIntances() []Instance {
-	instanceList := make([]Instance, 0)
-	return instanceList
-}
