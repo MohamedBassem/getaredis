@@ -43,6 +43,7 @@ func TestStartRedisInstance(t *testing.T) {
 	ctx.forceRemoveContainer(container.ID)
 }
 
+// TODO Mock a database for testing and actually test this function
 func TestNewInstance(t *testing.T) {
 	ctx, _ := Init("config.yml")
 	creatorIP, creatorHash := "192.168.1.20", "asdasdgsdasdbdfg"
