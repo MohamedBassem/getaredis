@@ -1,0 +1,21 @@
+# The MySQL Database for instances info
+database:
+  user: root
+  password: toor
+  dbname: getaredis
+
+# The Redis Server for service discovery
+redisAddress: "localhost:6379"
+redisPassword: "<Some Random String>"
+
+# Digitalocean API token for autoscaling
+digitalOceanToken: "<Digitalocean Token>"
+
+# An SSH key for newly created droplets
+dropletSSHKeyID: XXXX
+
+# The redis instances maximum memory in MB
+maxInstanceSize: 5
+
+# The number of hours to keep an instance alive
+maxInstanceTime: 24
