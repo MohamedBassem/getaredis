@@ -17,14 +17,15 @@ import (
 )
 
 type configuration struct {
-	Database          map[string]string `yaml:"database"`
-	RedisAddress      string            `yaml:"redisAddress"`
-	RedisPassword     string            `yaml:"redisPassword"`
-	DigitalOceanToken string            `yaml:"digitalOceanToken"`
-	DropletSSHKeyID   int               `yaml:"dropletSSHKeyID"`
-	MaxInstanceSize   int               `yaml:"maxInstanceSize"`
-	MaxInstanceTime   int               `yaml:"maxInstanceTime"`
-	MaxInstancesPerIP int               `yaml:"maxInstancesPerIP"`
+	Database            map[string]string `yaml:"database"`
+	RedisAddress        string            `yaml:"redisAddress"`
+	RedisPassword       string            `yaml:"redisPassword"`
+	DigitalOceanToken   string            `yaml:"digitalOceanToken"`
+	DropletSSHKeyID     int               `yaml:"dropletSSHKeyID"`
+	MaxInstanceSize     int               `yaml:"maxInstanceSize"`
+	MaxInstanceTime     int               `yaml:"maxInstanceTime"`
+	MaxInstancesPerIP   int               `yaml:"maxInstancesPerIP"`
+	MaxRedisConnections int               `yaml:"maxRedisConnections"`
 }
 
 type context struct {

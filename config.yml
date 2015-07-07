@@ -17,8 +17,12 @@ dropletSSHKeyID: XXXX
 # The redis instances maximum memory in MB
 maxInstanceSize: 5
 
+# Maximum number of simultinous connections to a redis instance
+maxRedisConnections: 5
+
 # The number of hours to keep an instance alive
 maxInstanceTime: 24
 
 # Maximum number of instances per IP
 maxInstancesPerIP: 10
+

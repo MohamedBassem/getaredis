@@ -2,6 +2,7 @@ package getaredis
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -27,7 +28,7 @@ func generateRedisConfig(ctx *context, name, password string) docker.CreateConta
 			Image:      "redis",
 			Memory:     int64(ctx.config.MaxInstanceSize) * 1024 * 1024,
 			MemorySwap: -1,
-			Cmd:        []string{"redis-server", "--requirepass", password},
+			Cmd:        []string{"redis-server", "--requirepass", password, "--maxclients", strconv.Itoa(ctx.config.MaxRedisConnections)},
 		},
 	}
 }
