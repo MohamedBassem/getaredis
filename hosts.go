@@ -2,6 +2,7 @@ package getaredis
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -117,4 +118,29 @@ write_files:
 
 	_, _, err := ctx.digitalocean.Droplets.Create(createRequest)
 	return err
+}
+
+func (ctx *context) DeleteHost(ip string) error {
+	droplets, _, err := ctx.digitalocean.Droplets.List(nil)
+	if err != nil {
+		return err
+	}
+	deleted := false
+	for _, d := range droplets {
+		if len(d.Networks.V4) == 0 {
+			continue
+		}
+		if d.Networks.V4[0].IPAddress == ip {
+			_, err := ctx.digitalocean.Droplets.Delete(d.ID)
+			if err != nil {
+				return err
+			}
+			deleted = true
+			break
+		}
+	}
+	if !deleted {
+		return errors.New("Couldn't find droplet with this IP")
+	}
+	return nil
 }
