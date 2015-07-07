@@ -54,7 +54,7 @@ func cleanRedisInstances() {
 func main() {
 	c := cron.New()
 	c.AddFunc("@every 20m", cleanRedisInstances)
-	c.AddFunc("@every 5m", monitorHosts)
+	c.AddFunc("@every 10m", monitorHosts)
 	c.Start()
 	<-make(chan struct{})
 }
