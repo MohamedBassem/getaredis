@@ -59,7 +59,10 @@ func startRedisInstance(ctx *context, dockerAdderss, name, password string) (*do
 
 // Creates a new docker instance with a random name, and returns the instance details back
 func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error) {
-	dockerHostIP := ctx.scheduleNewContainer()
+	dockerHostIP, err := ctx.scheduleNewContainer()
+	if err != nil {
+		return nil, err
+	}
 	dockerAddress := generateDockerAddress(dockerHostIP)
 	name := generateRandomString(20)
 	password := generateRandomString(20)
