@@ -49,7 +49,7 @@ func Init(configPath string) (*context, error) {
 	}
 
 	// Starting mysql connection
-	databaseHost := fmt.Sprintf("%v:%v@%v/%v?charset=utf8&parseTime=True&loc=Local", config.Database["user"], config.Database["host"], config.Database["password"], config.Database["dbname"])
+	databaseHost := fmt.Sprintf("%v:%v@%v/tcp(%v)?charset=utf8&parseTime=True&loc=Local", config.Database["user"], config.Database["host"], config.Database["password"], config.Database["dbname"])
 	tmp2, err := gorm.Open("mysql", databaseHost)
 	if err != nil {
 		return nil, err
