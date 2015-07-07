@@ -5,9 +5,22 @@ function fixLoaderPosition(){
   loader.children[0].style.marginLeft = (loaderContainerWidth/2 - loaderWidth/2 - 10) + "px";
 }
 
+function fixFooterPosition(){
+  var height = window.innerHeight;
+  var container = document.getElementById("container").parentNode;
+  var footerHeight = document.getElementById("footer").clientHeight;
+  if( container.clientHeight + footerHeight > height ){
+    container.style.marginBottom = "0px";
+  }else{
+    container.style.marginBottom = (height-container.clientHeight-footerHeight) + "px";
+  }
+}
+
 (function() {
-  fixLoaderPosition()
-  window.addEventListener("resize", fixLoaderPosition)
+  fixLoaderPosition();
+  fixFooterPosition();
+  window.addEventListener("resize", fixLoaderPosition);
+  window.addEventListener("resize", fixFooterPosition);
   
   var button = document.getElementById("getaredis");
   var errorMessage = document.getElementById("error");
@@ -17,6 +30,7 @@ function fixLoaderPosition(){
     errorMessage.style.display = "none";
     message.style.display = "none";
     loader.style.visibility = "visible";
+    fixFooterPosition();
     var http = new XMLHttpRequest();
     var url = "/instance";
     http.open("POST", url, true);
@@ -25,17 +39,18 @@ function fixLoaderPosition(){
       if(http.readyState == 4) {
         loader.style.visibility = "hidden";
         if(http.status == 200){
-          console.log(http.responseText);
           data = JSON.parse(http.responseText);
-          message.innerHTML = "IP: " + data["IP"] + "<br/>Port: " + data["port"] + "<br/>Password: " + data["password"] + "<br/>";
-          message.innerHTML+= "Example:<br/>$ telnet " + data["IP"] + " " + data["port"] + "<br/>AUTH " + data["password"] +"<br/>";
-          message.innerHTML+= "+OK<br/>PING<br/>+PONG<br/>";
+          message.innerHTML = '<strong style="color:grey;"># Your Instance is Ready!</strong>\n'
+          message.innerHTML+= "$ telnet " + data["IP"] + " " + data["port"] + "\n";
+          message.innerHTML+= "AUTH " + data["password"] +"\n";
+          message.innerHTML+= '<span style="color:yellow;">+OK</span>\n';
           message.style.display = "";
         }else{
           errorMessage.innerHTML = http.responseText;
           errorMessage.style.display = "";
           button.style.display = "";
         }
+        fixFooterPosition();
       }
     }
     http.send();
