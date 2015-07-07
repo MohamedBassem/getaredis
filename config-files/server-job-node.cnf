@@ -18,14 +18,14 @@ write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
     content: |
         [program:go_jobs]
-        command=/root/go/bin/getaredis-jobs -f /root/config.yml
+        command=/root/go/bin/getaredis-jobs --config /root/config.yml
         autostart=true
         autorestart=true
         stderr_logfile=/var/log/go_jobs.err.log
         stdout_logfile=/var/log/go_jobs.out.log
 
         [program:go_server]
-        command=/root/go/bin/getaredis-server -f /root/config.yml
+        command=/root/go/bin/getaredis-server --config /root/config.yml
         autostart=true
         autorestart=true
         stderr_logfile=/var/log/getaredis-server.err.log
