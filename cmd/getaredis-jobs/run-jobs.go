@@ -65,5 +65,6 @@ func main() {
 	c.AddFunc("@every 20m", cleanRedisInstances)
 	c.AddFunc("@every 10m", monitorHosts)
 	c.Start()
+	monitorHosts()
 	<-make(chan struct{})
 }
