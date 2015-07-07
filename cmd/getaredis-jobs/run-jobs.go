@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 
@@ -8,8 +9,10 @@ import (
 	"github.com/robfig/cron"
 )
 
+var configFileName *string
+
 func monitorHosts() {
-	ctx, err := getaredis.Init("../../config.yml")
+	ctx, err := getaredis.Init(*configFileName)
 	errLogger := log.New(os.Stderr, "MonitorHosts", 0)
 	outLogger := log.New(os.Stdout, "MonitorHosts", 0)
 	outLogger.Println("Started")
@@ -35,7 +38,7 @@ func monitorHosts() {
 }
 
 func cleanRedisInstances() {
-	ctx, err := getaredis.Init("../../config.yml")
+	ctx, err := getaredis.Init(*configFileName)
 	errLogger := log.New(os.Stderr, "CleanRedisInstances", 0)
 	outLogger := log.New(os.Stdout, "CleanRedisInstances", 0)
 	outLogger.Println("Started")
@@ -52,6 +55,12 @@ func cleanRedisInstances() {
 }
 
 func main() {
+	configFileName = flag.String("config", "", "Configuration file path")
+	flag.Parse()
+
+	if *configFileName == "" {
+		log.Fatal("A configuration file must be provided.")
+	}
 	c := cron.New()
 	c.AddFunc("@every 20m", cleanRedisInstances)
 	c.AddFunc("@every 10m", monitorHosts)
