@@ -2,7 +2,7 @@
 database:
   user: root
   password: toor
-  host: localhost
+  host: localhost:3306
   dbname: getaredis
 
 # The Redis Server for service discovery
