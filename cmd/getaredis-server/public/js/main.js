@@ -18,7 +18,7 @@ function fixLoaderPosition(){
     message.style.display = "none";
     loader.style.visibility = "visible";
     var http = new XMLHttpRequest();
-    var url = "http://localhost:8080/instance";
+    var url = "/instance";
     http.open("POST", url, true);
 
     http.onreadystatechange = function() { //Call a function when the state changes.
@@ -29,7 +29,7 @@ function fixLoaderPosition(){
           data = JSON.parse(http.responseText);
           message.innerHTML = "IP: " + data["IP"] + "<br/>Port: " + data["port"] + "<br/>Password: " + data["password"] + "<br/>";
           message.innerHTML+= "Example:<br/>$ telnet " + data["IP"] + " " + data["port"] + "<br/>AUTH " + data["password"] +"<br/>";
-          message.innerHTML+= "PING<br/>+PONG<br/>";
+          message.innerHTML+= "+OK<br/>PING<br/>+PONG<br/>";
           message.style.display = "";
         }else{
           errorMessage.innerHTML = http.responseText;
