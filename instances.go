@@ -59,7 +59,7 @@ func startRedisInstance(ctx *context, dockerAdderss, name, password string) (*do
 
 func CheckInstanceLimit(ctx *context, ip string) error {
 	var count int
-	ctx.db.Model(&Instance{}).Where("running = 1 AND creator_ip = ?", ip).Count(count)
+	ctx.db.Model(&Instance{}).Where("running = 1 AND creator_ip = ?", ip).Count(&count)
 	if count >= ctx.config.MaxInstancesPerIP {
 		return errors.New("Instances limit per IP reached")
 	}
