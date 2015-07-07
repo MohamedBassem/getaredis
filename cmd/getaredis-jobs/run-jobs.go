@@ -52,7 +52,6 @@ func cleanRedisInstances() {
 }
 
 func main() {
-
 	c := cron.New()
 	c.AddFunc("@every 20m", cleanRedisInstances)
 	c.AddFunc("@every 5m", monitorHosts)
