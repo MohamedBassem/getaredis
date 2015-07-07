@@ -12,7 +12,6 @@ type Instance struct {
 	ID           int `sql:"AUTO_INCREMENT"`
 	Name         string
 	CreatorIP    string
-	CreatorHash  string
 	CreatedAt    time.Time
 	HostedAtIP   string
 	HostedAtPort string
@@ -57,8 +56,17 @@ func startRedisInstance(ctx *context, dockerAdderss, name, password string) (*do
 	return container, nil
 }
 
+func CheckInstanceLimit(ctx *context, ip string) error {
+	var count int
+	ctx.db.Model(&Instance{}).Where("running = 1 AND creator_ip = ?", ip).Count(count)
+	if count >= ctx.config.MaxInstancesPerIP {
+		return errors.New("Instances limit per IP reached")
+	}
+	return nil
+}
+
 // Creates a new docker instance with a random name, and returns the instance details back
-func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error) {
+func (ctx *context) NewInstance(creatorIP string) (*Instance, error) {
 	dockerHostIP, err := ctx.scheduleNewContainer()
 	if err != nil {
 		return nil, err
@@ -78,7 +86,6 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	instance := &Instance{
 		Name:         name,
 		CreatorIP:    creatorIP,
-		CreatorHash:  creatorHash,
 		CreatedAt:    time.Now(),
 		HostedAtIP:   dockerHostIP,
 		HostedAtPort: container.NetworkSettings.Ports["6379/tcp"][0].HostPort,

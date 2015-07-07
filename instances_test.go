@@ -43,6 +43,6 @@ func TestStartRedisInstance(t *testing.T) {
 func TestNewInstance(t *testing.T) {
 	ctx, _ := Init("config.yml")
 	creatorIP, creatorHash := "192.168.1.20", "asdasdgsdasdbdfg"
-	instance, _ := ctx.NewInstance(creatorIP, creatorHash)
+	instance, _ := ctx.NewInstance(creatorIP)
 	forceRemoveContainer(ctx, instance.ContainerID)
 }

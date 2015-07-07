@@ -19,3 +19,6 @@ maxInstanceSize: 5
 
 # The number of hours to keep an instance alive
 maxInstanceTime: 24
+
+# Maximum number of instances per IP
+maxInstancesPerIP: 10

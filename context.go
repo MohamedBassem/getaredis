@@ -24,6 +24,7 @@ type configuration struct {
 	DropletSSHKeyID   int               `yaml:"dropletSSHKeyID"`
 	MaxInstanceSize   int               `yaml:"maxInstanceSize"`
 	MaxInstanceTime   int               `yaml:"maxInstanceTime"`
+	MaxInstancesPerIP int               `yaml:"maxInstancesPerIP"`
 }
 
 type context struct {
