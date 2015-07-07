@@ -11,6 +11,7 @@ runcmd:
   - export GOPATH=/root/go
   - /usr/local/go/bin/go get github.com/MohamedBassem/getaredis/...
   - apt-get install -y supervisor
+# You will need to upload the config file manually
 write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
     content: |
@@ -27,6 +28,3 @@ write_files:
         autorestart=true
         stderr_logfile=/var/log/getaredis-server.err.log
         stdout_logfile=/var/log/getaredis-server.out.log
-  - path: /root/config.yml
-    content: |
-        # Please replace me!
