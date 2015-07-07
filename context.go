@@ -72,7 +72,5 @@ func Init(configPath string) (*context, error) {
 		digitalocean: *tmp4,
 	}
 
-	// TODO : Remove this line
-	ctx.db.LogMode(true)
 	return &ctx, nil
 }
