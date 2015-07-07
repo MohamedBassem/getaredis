@@ -8,7 +8,7 @@ func CleanRedisInstaces(ctx *context) {
 	ctx.db.Model(&Instance{}).Where("running = 1 AND created_at < ?", maxTimeStamp).Find(&instances)
 
 	for _, instance := range instances {
-		ctx.RemoveContainer(instance.ContainerID)
+		ctx.RemoveContainer(instance.HostedAtIP, instance.ContainerID)
 	}
 
 	ctx.db.Model(&Instance{}).Where("running = 1 AND created_at < ?", maxTimeStamp).UpdateColumn("running", false)

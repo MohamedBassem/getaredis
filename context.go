@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/digitalocean/godo"
-	"github.com/fsouza/go-dockerclient"
 	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -19,7 +18,6 @@ import (
 
 type configuration struct {
 	Database          map[string]string `yaml:"database"`
-	DockerHost        string            `yaml:"dockerHost"`
 	RedisAddress      string            `yaml:"redisAddress"`
 	RedisPassword     string            `yaml:"redisPassword"`
 	DigitalOceanToken string            `yaml:"digitalOceanToken"`
@@ -29,7 +27,6 @@ type configuration struct {
 }
 
 type context struct {
-	dockerClient docker.Client
 	db           gorm.DB
 	redis        redis.Conn
 	digitalocean godo.Client
@@ -48,11 +45,9 @@ func Init(configPath string) (*context, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Starting docker connection
-	tmp, _ := docker.NewClient(config.DockerHost)
-	databaseHost := fmt.Sprintf("%v:%v@/%v?charset=utf8&parseTime=True&loc=Local", config.Database["user"], config.Database["password"], config.Database["dbname"])
 
 	// Starting mysql connection
+	databaseHost := fmt.Sprintf("%v:%v@/%v?charset=utf8&parseTime=True&loc=Local", config.Database["user"], config.Database["password"], config.Database["dbname"])
 	tmp2, err := gorm.Open("mysql", databaseHost)
 	if err != nil {
 		return nil, err
@@ -71,7 +66,6 @@ func Init(configPath string) (*context, error) {
 	tmp4 := godo.NewClient(oauthClient)
 
 	ctx := context{
-		dockerClient: *tmp,
 		config:       *config,
 		db:           tmp2,
 		redis:        tmp3,

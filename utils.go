@@ -2,6 +2,10 @@ package getaredis
 
 import "math/rand"
 
+func generateDockerAddress(ip string) string {
+	return "tcp://" + ip + ":2375"
+}
+
 func generateRandomString(length int) string {
 	var ret string
 	runes := []rune("abcdefghijklmnopqrstuvwxyz0123456789")

@@ -33,17 +33,21 @@ func generateRedisConfig(ctx *context, name, password string) docker.CreateConta
 	}
 }
 
-func startRedisInstance(ctx *context, name, password string) (*docker.Container, error) {
-	container, err := ctx.dockerClient.CreateContainer(generateRedisConfig(ctx, name, password))
+func startRedisInstance(ctx *context, dockerAdderss, name, password string) (*docker.Container, error) {
+	dockerClient, err := docker.NewClient(dockerAdderss)
 	if err != nil {
 		return nil, err
 	}
-	err = ctx.dockerClient.StartContainer(container.ID, &docker.HostConfig{PublishAllPorts: true})
+	container, err := dockerClient.CreateContainer(generateRedisConfig(ctx, name, password))
+	if err != nil {
+		return nil, err
+	}
+	err = dockerClient.StartContainer(container.ID, &docker.HostConfig{PublishAllPorts: true})
 	if err != nil {
 		return nil, err
 	}
 	time.Sleep(time.Second)
-	container, err = ctx.dockerClient.InspectContainer(container.ID)
+	container, err = dockerClient.InspectContainer(container.ID)
 	if err != nil || !container.State.Running {
 		if err != nil {
 			return nil, err
@@ -55,13 +59,16 @@ func startRedisInstance(ctx *context, name, password string) (*docker.Container,
 
 // Creates a new docker instance with a random name, and returns the instance details back
 func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error) {
+	dockerHostIP := ctx.scheduleNewContainer()
+	dockerAddress := generateDockerAddress(dockerHostIP)
 	name := generateRandomString(20)
 	password := generateRandomString(20)
 	var count int
 	for ctx.db.Model(&Instance{}).Where(&Instance{Name: name}).Count(&count); count != 0; name = generateRandomString(20) {
 		// Keep Trying!
 	}
-	container, err := startRedisInstance(ctx, name, password)
+
+	container, err := startRedisInstance(ctx, dockerAddress, name, password)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +77,7 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 		CreatorIP:    creatorIP,
 		CreatorHash:  creatorHash,
 		CreatedAt:    time.Now(),
-		HostedAtIP:   container.NetworkSettings.IPAddress,
+		HostedAtIP:   dockerHostIP,
 		HostedAtPort: container.NetworkSettings.Ports["6379/tcp"][0].HostPort,
 		Password:     password,
 		Running:      true,
@@ -83,9 +90,14 @@ func (ctx *context) NewInstance(creatorIP, creatorHash string) (*Instance, error
 	return instance, nil
 }
 
-func (ctx *context) RemoveContainer(id string) {
-	ctx.dockerClient.RemoveContainer(docker.RemoveContainerOptions{
+func (ctx *context) RemoveContainer(hostIP, id string) error {
+	dockerClient, err := docker.NewClient(generateDockerAddress(hostIP))
+	if err != nil {
+		return err
+	}
+	err = dockerClient.RemoveContainer(docker.RemoveContainerOptions{
 		ID:    id,
 		Force: true,
 	})
+	return err
 }
