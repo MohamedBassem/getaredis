@@ -88,7 +88,7 @@ write_files:
           echo "AUTH %v";
           while true; do
             NUMBER_OF_CONTAINERS=$(($(docker ps | wc -l) - 1))
-            echo "SET server:$NODE_NAME '{\"PublicIP\":\"$PUBLIC_IP",\"PrivateIP\":\"$PRIVATE_IP\",\"Name\":\"$NODE_NAME\",\"NumberOfContainers\":$NUMBER_OF_CONTAINERS}'";
+            echo "SET server:$NODE_NAME '{\"PublicIP\":\"$PUBLIC_IP\",\"PrivateIP\":\"$PRIVATE_IP\",\"Name\":\"$NODE_NAME\",\"NumberOfContainers\":$NUMBER_OF_CONTAINERS}'";
             echo "EXPIRE server:$NODE_NAME 10";
             sleep 4;
           done
