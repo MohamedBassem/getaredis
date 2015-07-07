@@ -1,7 +1,6 @@
 package getaredis
 
 import (
-	"math/rand"
 	"testing"
 	"time"
 
@@ -9,17 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getAMockDockerContext() *context {
-	rand.Seed(time.Now().UnixNano())
-	tmp, _ := docker.NewClient("unix:///var/run/docker.sock")
-	ctx := &context{
-		dockerClient: *tmp,
-	}
-	return ctx
+func getDockerClient() (*docker.Client, error) {
+	return docker.NewClient("unix:///var/run/docker.sock")
 }
 
 func forceRemoveContainer(ctx *context, id string) {
-	ctx.dockerClient.RemoveContainer(docker.RemoveContainerOptions{
+	dockerClient, _ := getDockerClient()
+	dockerClient.RemoveContainer(docker.RemoveContainerOptions{
 		ID:    id,
 		Force: true,
 	})
@@ -27,15 +22,16 @@ func forceRemoveContainer(ctx *context, id string) {
 
 // TODO Add redis authentication check
 func TestStartRedisInstance(t *testing.T) {
-	ctx := getAMockDockerContext()
+	ctx, _ := Init("config.yml")
 	containerName := generateRandomString(20)
 	password := generateRandomString(20)
-	container, err := startRedisInstance(ctx, containerName, password)
+	container, err := startRedisInstance(ctx, "unix:///var/run/docker.sock", containerName, password)
 	if !assert.NoError(t, err, "Starting docker container should not return an Error.") {
 		return
 	}
 	time.Sleep(time.Second)
-	container, err = ctx.dockerClient.InspectContainer(containerName)
+	dockerClient, _ := getDockerClient()
+	container, err = dockerClient.InspectContainer(containerName)
 	if !assert.True(t, container.State.Running, "Container Failed to start.") {
 		return
 	}
