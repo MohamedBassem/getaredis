@@ -6,8 +6,8 @@ runcmd:
   - echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
   - mkdir /root/go
   - export HOME=/root
-  - echo 'export GOROOT=$HOME/go' >> /root/.bashrc
-  - echo 'export PATH=$PATH:$GOROOT/bin' >> /root/.bashrc
+  - echo 'export GOPATH=$HOME/go' >> /root/.bashrc
+  - echo 'export PATH=$PATH:$GOPATH/bin' >> /root/.bashrc
   - export GOPATH=/root/go
   - /usr/local/go/bin/go get github.com/MohamedBassem/getaredis/...
   - apt-get install -y supervisor
