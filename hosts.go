@@ -95,7 +95,7 @@ write_files:
         ) | telnet %v %v
 `
 
-	userData = fmt.Sprintf(userData, dropletName, ctx.config.RedisPassword, dropletName, redisIP, redisPort)
+	userData = fmt.Sprintf(userData, dropletName, ctx.config.RedisPassword, redisIP, redisPort)
 
 	var sshKey *godo.DropletCreateSSHKey
 	if ctx.config.DropletSSHKeyID != -1 {
