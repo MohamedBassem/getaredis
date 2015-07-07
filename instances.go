@@ -68,11 +68,11 @@ func CheckInstanceLimit(ctx *context, ip string) error {
 
 // Creates a new docker instance with a random name, and returns the instance details back
 func (ctx *context) NewInstance(creatorIP string) (*Instance, error) {
-	dockerHostIP, err := ctx.scheduleNewContainer()
+	dockerHostPublicIP, dockerHostPrivateIP, err := ctx.scheduleNewContainer()
 	if err != nil {
 		return nil, err
 	}
-	dockerAddress := generateDockerAddress(dockerHostIP)
+	dockerAddress := generateDockerAddress(dockerHostPrivateIP)
 	name := generateRandomString(20)
 	password := generateRandomString(20)
 	var count int
@@ -88,7 +88,7 @@ func (ctx *context) NewInstance(creatorIP string) (*Instance, error) {
 		Name:         name,
 		CreatorIP:    creatorIP,
 		CreatedAt:    time.Now(),
-		HostedAtIP:   dockerHostIP,
+		HostedAtIP:   dockerHostPublicIP,
 		HostedAtPort: container.NetworkSettings.Ports["6379/tcp"][0].HostPort,
 		Password:     password,
 		Running:      true,

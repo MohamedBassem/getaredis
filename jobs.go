@@ -45,9 +45,9 @@ func MonitorHosts(ctx *context) (startedHosts bool, deletedHosts []string, err e
 				break
 			}
 			if host.NumberOfContainers == 0 {
-				err = ctx.DeleteHost(host.IP)
+				err = ctx.DeleteHost(host.PublicIP)
 				zeros--
-				deletedHosts = append(deletedHosts, host.IP)
+				deletedHosts = append(deletedHosts, host.PublicIP)
 			}
 		}
 	}

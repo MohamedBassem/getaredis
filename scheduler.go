@@ -3,7 +3,7 @@ package getaredis
 import "errors"
 
 // Returns the ip for the host which can hold this container
-func (ctx *context) scheduleNewContainer() (ip string, err error) {
+func (ctx *context) scheduleNewContainer() (publicIP, privateIP string, err error) {
 	hosts := ctx.ListHosts()
 	maximumNumberOfContainers := 60
 	maximumNumber := -1
@@ -16,7 +16,7 @@ func (ctx *context) scheduleNewContainer() (ip string, err error) {
 	}
 
 	if chosenHost == -1 {
-		return "", errors.New("Cannot schedule container.")
+		return "", "", errors.New("Cannot schedule container.")
 	}
-	return hosts[chosenHost].IP, nil
+	return hosts[chosenHost].PublicIP, hosts[chosenHost].PrivateIP, nil
 }

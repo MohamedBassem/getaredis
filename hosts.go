@@ -24,7 +24,8 @@ func (t *TokenSource) Token() (*oauth2.Token, error) {
 }
 
 type Host struct {
-	IP                 string
+	PublicIP           string
+	PrivateIP          string
 	Name               string
 	NumberOfContainers int
 	MemoryFree         float32
@@ -70,13 +71,6 @@ runcmd:
 write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
     content: |
-        [program:go_jobs]
-        command=/usr/local/bin/go
-        autostart=true
-        autorestart=true
-        stderr_logfile=/var/log/go_jobs.err.log
-        stdout_logfile=/var/log/go_jobs.out.log
-
         [program:service_discovery]
         command=/usr/local/bin/service_discovery
         autostart=true
@@ -88,17 +82,20 @@ write_files:
     content: |
         #!/bin/bash
         (
+          PUBLIC_IP=$(curl http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)
+          PRIVATE_IP=$(curl http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/address)
+          NODE_NAME=%v
           echo "AUTH %v";
-          echo "SET server:%v {}";
-          echo "EXPIRE server:%v 10";
           while true; do
-            echo "EXPIRE server:%v 10";
-            sleep 2;
+            NUMBER_OF_CONTAINERS=$(($(docker ps | wc -l) - 1))
+            echo "SET server:$NODE_NAME '{\"PublicIP\":\"$PUBLIC_IP",\"PrivateIP\":\"$PRIVATE_IP\",\"Name\":\"$NODE_NAME\",\"NumberOfContainers\":$NUMBER_OF_CONTAINERS}'";
+            echo "EXPIRE server:$NODE_NAME 10";
+            sleep 4;
           done
         ) | telnet %v %v
 `
 
-	userData = fmt.Sprintf(userData, ctx.config.RedisPassword, dropletName, dropletName, dropletName, redisIP, redisPort)
+	userData = fmt.Sprintf(userData, dropletName, ctx.config.RedisPassword, dropletName, redisIP, redisPort)
 
 	var sshKey *godo.DropletCreateSSHKey
 	if ctx.config.DropletSSHKeyID != -1 {
@@ -112,8 +109,9 @@ write_files:
 		Image: godo.DropletCreateImage{
 			ID: 12380137, // The Docker Image
 		},
-		UserData: userData,
-		SSHKeys:  []godo.DropletCreateSSHKey{*sshKey},
+		UserData:          userData,
+		PrivateNetworking: true,
+		SSHKeys:           []godo.DropletCreateSSHKey{*sshKey},
 	}
 
 	_, _, err := ctx.digitalocean.Droplets.Create(createRequest)
