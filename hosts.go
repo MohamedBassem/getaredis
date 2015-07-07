@@ -40,13 +40,12 @@ func (ctx *context) ListHosts() []Host {
 	hosts := make([]Host, len(serverConfigs))
 	for i, val := range serverConfigs {
 		newHost := new(Host)
-		fmt.Println(val)
 		err := json.Unmarshal([]byte(val), newHost)
-		fmt.Println(err)
-		fmt.Println(newHost)
+		if err != nil {
+			continue
+		}
 		hosts[i] = *newHost
 	}
-	fmt.Printf("%+v\n", hosts)
 	return hosts
 }
 
