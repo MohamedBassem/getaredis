@@ -12,7 +12,7 @@ apt-get install -y mysql-server mysql-client
 
 #Allowing MySQL remote access
 sed -i 's/\(bind-address.*=.*\)127.0.0.1/\1 0.0.0.0/g' /etc/mysql/my.cnf
-echo "CREATE DATABASE $DATABASE_NAME; GRANT ALL ON $DATABASE_NAME.* TO root@'%' IDENTIFIED BY '$MYSQL_PASSWORD'" > /tmp/mysqltmp
+echo "CREATE DATABASE $DATABASE_NAME; GRANT ALL ON $DATABASE_NAME.* TO root@'%' IDENTIFIED BY '$MYSQL_PASSWORD';" > /tmp/mysqltmp
 mysql -p$MYSQL_PASSWORD < /tmp/mysqltmp
 rm /tmp/mysqltmp
 service mysql restart
