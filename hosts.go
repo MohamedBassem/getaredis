@@ -57,16 +57,7 @@ func (ctx *context) NewHost() error {
 	dropletName := "getaredis-" + generateRandomString(10)
 	userData := `#cloud-config
 runcmd:
-  - apt-get install -y wget
-  - wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
-  - tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
-  - echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
-  - mkdir /root/go
-  - export HOME=/root
-  - echo 'export GOPATH=$HOME/go' >> /root/.bashrc
-  - echo 'export PATH=$PATH:$GOPATH/bin' >> /root/.bashrc
-  - export GOPATH=/root/go
-  - /usr/local/go/bin/go get github.com/MohamedBassem/getaredis/...
+  - docker pull redis
   - apt-get install -y supervisor
 write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
