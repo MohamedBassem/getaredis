@@ -54,7 +54,7 @@ func (ctx *context) ListHosts() []Host {
 func (ctx *context) NewHost() error {
 	redisIP := strings.Split(ctx.config.RedisAddress, ":")[0]
 	redisPort := strings.Split(ctx.config.RedisAddress, ":")[1]
-	dropletName := "getaredis-" + generateRandomString(10)
+	dropletName := "getaredis-server-" + generateRandomString(10)
 	userData := `#cloud-config
 runcmd:
   - docker pull redis
