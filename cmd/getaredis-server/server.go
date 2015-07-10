@@ -40,7 +40,11 @@ func main() {
 	m.Use(render.Renderer())
 
 	m.Get("/", func(r render.Render) {
-		r.HTML(200, "index", "")
+		count, err := ctx.CountContainers(true)
+		if err != nil {
+			count = -1
+		}
+		r.HTML(200, "index", count)
 	})
 
 	m.Post("/instance", func(res http.ResponseWriter, req *http.Request) (int, string) {

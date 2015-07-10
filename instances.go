@@ -112,3 +112,13 @@ func (ctx *context) RemoveContainer(hostIP, id string) error {
 	})
 	return err
 }
+
+func (ctx *context) CountContainers(includeNotRunning bool) (int, error) {
+	var count = -1
+	var where string
+	if !includeNotRunning {
+		where = "running = 1"
+	}
+	err := ctx.db.Model(&Instance{}).Where(where).Count(&count)
+	return count, err.Error
+}
