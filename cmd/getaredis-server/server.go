@@ -47,5 +47,5 @@ func main() {
 		}
 		return 200, fmt.Sprintf("{\"IP\": \"%v\", \"port\": \"%v\", \"password\": \"%v\"}", instance.HostedAtIP, instance.HostedAtPort, instance.Password)
 	})
-	m.RunOnAddr(":" + strconv.Itoa(*port))
+	m.RunOnAddr("127.0.0.1:" + strconv.Itoa(*port))
 }
