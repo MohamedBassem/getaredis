@@ -38,11 +38,3 @@ func TestStartRedisInstance(t *testing.T) {
 	assert.NotEmpty(t, container.NetworkSettings.Ports["6379/tcp"], "Should have a port mapping for redis port")
 	forceRemoveContainer(ctx, container.ID)
 }
-
-// TODO Mock a database for testing and actually test this function
-func TestNewInstance(t *testing.T) {
-	ctx, _ := Init("config.yml")
-	creatorIP, creatorHash := "192.168.1.20", "asdasdgsdasdbdfg"
-	instance, _ := ctx.NewInstance(creatorIP)
-	forceRemoveContainer(ctx, instance.ContainerID)
-}
