@@ -132,16 +132,15 @@ func (ctx *context) DeleteHost(ip string) error {
 	}
 	deleted := false
 	for _, d := range droplets {
-		if len(d.Networks.V4) == 0 {
-			continue
-		}
-		if d.Networks.V4[0].IPAddress == ip {
-			_, err := ctx.digitalocean.Droplets.Delete(d.ID)
-			if err != nil {
-				return err
+		for _, intr := range d.Networks.V4 {
+			if intr.IPAddress == ip {
+				_, err := ctx.digitalocean.Droplets.Delete(d.ID)
+				if err != nil {
+					return err
+				}
+				deleted = true
+				break
 			}
-			deleted = true
-			break
 		}
 	}
 	if !deleted {
