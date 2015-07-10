@@ -27,8 +27,8 @@ maxInstanceSize: 5
 maxRedisConnections: 5
 
 # The number of hours to keep an instance alive
-maxInstanceTime: 24
+maxInstanceTime: 12
 
 # Maximum number of instances per IP
-maxInstancesPerIP: 10
+maxInstancesPerIP: 6
 
