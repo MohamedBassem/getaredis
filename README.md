@@ -2,6 +2,8 @@
 
 A one click, docker based, auto scaling, Redis host implemented in Go and hosted on Digitalocean.
 
+![Homepage](https://raw.githubusercontent.com/MohamedBassem/getaredis/master/imgs/GetARedisHomePage.png)
+
 ##Tags
 
 - Docker
@@ -77,6 +79,9 @@ The code is as simple as this:
 - Monitoring console.
 - Better deployment method.
 - Better documentation.
+
+##Note
+The project is still in beta and not 100% stable.
 
 ##Contribution
 Your contributions and ideas are welcomed through issues and pull requests.
