@@ -14,7 +14,7 @@ A one click, docker based, auto scaling, Redis host implemented in Go and hosted
 
 ##Why?
 
-I started the project to enhance my Go skills that I started to learn few weeks ago. Then I found that the idea may be useful for hackathons and proof of concept projects.
+I started the project to enhance my Go skills which I started to learn few weeks ago. Then I found that the idea may be useful for hackathons and proof of concept projects.
 
 ##Technical Details
 
