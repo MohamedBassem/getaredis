@@ -31,9 +31,8 @@ write_files:
         autorestart=true
         stderr_logfile=/var/log/getaredis-server.err.log
         stdout_logfile=/var/log/getaredis-server.out.log
-
-  - path : /etc/nginx/conf.d/server.conf
-        content: |
+  - path: /etc/nginx/conf.d/server.conf
+    content: |
         server {
           listen 80;
           location / {
@@ -43,4 +42,3 @@ write_files:
             proxy_pass http://127.0.0.1:8080;
           }
         }
-
