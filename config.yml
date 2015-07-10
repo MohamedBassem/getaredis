@@ -12,6 +12,9 @@ redisPassword: "<Some Random String>"
 # Digitalocean API token for autoscaling
 digitalOceanToken: "<Digitalocean Token>"
 
+# Main Server IP
+mainServerPrivateIP: "127.0.0.1"
+
 # An SSH key for newly created droplets
 dropletSSHKeyID: XXXX
 

@@ -59,6 +59,8 @@ func (ctx *context) NewHost() error {
 runcmd:
   - docker pull redis
   - apt-get install -y supervisor
+  - echo 'DOCKER_OPTS=$DOCKERHOST" -H unix:///var/run/docker.sock -H %v"' >> /etc/default/docker
+  - service docker restart
 write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
     content: |
@@ -86,7 +88,7 @@ write_files:
         ) | telnet %v %v
 `
 
-	userData = fmt.Sprintf(userData, dropletName, ctx.config.RedisPassword, redisIP, redisPort)
+	userData = fmt.Sprintf(userData, generateDockerAddress(ctx.config.MainServerPrivateIP), dropletName, ctx.config.RedisPassword, redisIP, redisPort)
 
 	var sshKey *godo.DropletCreateSSHKey
 	if ctx.config.DropletSSHKeyID != -1 {

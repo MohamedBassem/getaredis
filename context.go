@@ -22,6 +22,7 @@ type configuration struct {
 	RedisPassword       string            `yaml:"redisPassword"`
 	DigitalOceanToken   string            `yaml:"digitalOceanToken"`
 	DropletSSHKeyID     int               `yaml:"dropletSSHKeyID"`
+	MainServerPrivateIP string            `yaml:"mainServerPrivateIP"`
 	MaxInstanceSize     int               `yaml:"maxInstanceSize"`
 	MaxInstanceTime     int               `yaml:"maxInstanceTime"`
 	MaxInstancesPerIP   int               `yaml:"maxInstancesPerIP"`
