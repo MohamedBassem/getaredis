@@ -4,14 +4,22 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/MohamedBassem/getaredis"
 	"github.com/codegangsta/martini-contrib/render"
 	"github.com/go-martini/martini"
 )
+
+func getIP(r *http.Request) string {
+	if ipProxy := r.Header.Get("X-FORWARDED-FOR"); len(ipProxy) > 0 {
+		return ipProxy
+	}
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	return ip
+}
 
 func main() {
 	configFileName := flag.String("config", "", "Configuration file path")
@@ -36,7 +44,7 @@ func main() {
 	})
 
 	m.Post("/instance", func(res http.ResponseWriter, req *http.Request) (int, string) {
-		requesterIP := strings.Split(req.RemoteAddr, ":")[0]
+		requesterIP := getIP(req)
 		err := getaredis.CheckInstanceLimit(ctx, requesterIP)
 		if err != nil {
 			return 403, err.Error()
