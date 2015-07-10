@@ -72,7 +72,7 @@ func (ctx *context) NewInstance(creatorIP string) (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	dockerAddress := generateDockerAddress(dockerHostPrivateIP)
+	dockerAddress := generateDockerAddress(dockerHostPrivateIP, ctx.config.Docker["user"], ctx.config.Docker["password"])
 	name := generateRandomString(20)
 	password := generateRandomString(20)
 	var count int
@@ -102,7 +102,7 @@ func (ctx *context) NewInstance(creatorIP string) (*Instance, error) {
 }
 
 func (ctx *context) RemoveContainer(hostIP, id string) error {
-	dockerClient, err := docker.NewClient(generateDockerAddress(hostIP))
+	dockerClient, err := docker.NewClient(generateDockerAddress(hostIP, ctx.config.Docker["user"], ctx.config.Docker["password"]))
 	if err != nil {
 		return err
 	}

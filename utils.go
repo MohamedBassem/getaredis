@@ -1,9 +1,12 @@
 package getaredis
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
-func generateDockerAddress(ip string) string {
-	return "tcp://" + ip + ":2375"
+func generateDockerAddress(ip, username, password string) string {
+	return fmt.Sprintf("tcp://%v:%v@%v:2377", username, password, ip)
 }
 
 func generateRandomString(length int) string {

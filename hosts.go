@@ -58,9 +58,12 @@ func (ctx *context) NewHost() error {
 	userData := `#cloud-config
 runcmd:
   - docker pull redis
-  - apt-get install -y supervisor
-  - echo 'DOCKER_OPTS=$DOCKERHOST" -H unix:///var/run/docker.sock -H %v"' >> /etc/default/docker
+  - apt-get install -y supervisor nginx apache2-utils
+  - echo 'DOCKER_OPTS=$DOCKER_OPTS" -H unix:///var/run/docker.sock -H tcp://127.0.0.1:2375"' >> /etc/default/docker
   - service docker restart
+  - mkdir -p /etc/nginx/docker_auth
+  - htpasswd -b -c /etc/nginx/docker_auth/.htpasswd %v %v
+  - service nginx reload
 write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
     content: |
@@ -86,9 +89,20 @@ write_files:
             sleep 4;
           done
         ) | telnet %v %v
+  - path : /etc/nginx/conf.d/docker.conf
+    content: |
+        server {
+          listen 2377;
+          location / {
+            auth_basic "Restricted";
+            auth_basic_user_file /etc/nginx/docker_auth/.htpasswd;
+            proxy_buffering off;
+            proxy_pass http://localhost:2375;
+          }
+        }
 `
 
-	userData = fmt.Sprintf(userData, generateDockerAddress(ctx.config.MainServerPrivateIP), dropletName, ctx.config.RedisPassword, redisIP, redisPort)
+	userData = fmt.Sprintf(userData, ctx.config.Docker["user"], ctx.config.Docker["password"], dropletName, ctx.config.RedisPassword, redisIP, redisPort)
 
 	var sshKey *godo.DropletCreateSSHKey
 	if ctx.config.DropletSSHKeyID != -1 {
