@@ -13,6 +13,8 @@ runcmd:
   - export GOROOT=/usr/local/go
   - /usr/local/go/bin/go get github.com/MohamedBassem/getaredis/...
   - apt-get install -y supervisor nginx
+  - rm -r /etc/nginx/sites-enabled /etc/nginx/sites-available
+  - service nginx restart
 # You will need to upload the config file manually
 write_files:
   - path: /etc/supervisor/conf.d/go_jobs.conf
