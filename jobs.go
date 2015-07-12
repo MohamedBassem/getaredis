@@ -26,20 +26,14 @@ func MonitorHosts(ctx *context) (startedHosts bool, deletedHosts []string, err e
 			zeros++
 		}
 	}
-	if zeros == 0 || len(hosts) < 2 {
+	if zeros == 0 {
 		err = ctx.NewHost()
 		if err != nil {
 			return
 		}
-		if len(hosts) == 0 {
-			err = ctx.NewHost()
-			if err != nil {
-				return
-			}
-		}
 		startedHosts = true
 		return
-	} else if zeros > 1 && len(hosts) > 2 {
+	} else if zeros > 1 {
 		for _, host := range hosts {
 			if zeros == 1 {
 				break
