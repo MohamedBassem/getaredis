@@ -114,7 +114,7 @@ write_files:
 		Region: "nyc3",
 		Size:   "512mb",
 		Image: godo.DropletCreateImage{
-			ID: 12380137, // The Docker Image
+			Slug: "docker",
 		},
 		UserData:          userData,
 		PrivateNetworking: true,
