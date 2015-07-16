@@ -13,6 +13,9 @@ var configFileName *string
 
 func monitorHosts() {
 	ctx, err := getaredis.Init(*configFileName)
+	if ctx != nil {
+		defer ctx.Close()
+	}
 	errLogger := log.New(os.Stderr, "MonitorHosts", 0)
 	outLogger := log.New(os.Stdout, "MonitorHosts", 0)
 	outLogger.Println("Started")
@@ -39,6 +42,9 @@ func monitorHosts() {
 
 func cleanRedisInstances() {
 	ctx, err := getaredis.Init(*configFileName)
+	if ctx != nil {
+		defer ctx.Close()
+	}
 	errLogger := log.New(os.Stderr, "CleanRedisInstances", 0)
 	outLogger := log.New(os.Stdout, "CleanRedisInstances", 0)
 	outLogger.Println("Started")

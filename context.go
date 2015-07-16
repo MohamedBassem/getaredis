@@ -77,3 +77,8 @@ func Init(configPath string) (*context, error) {
 
 	return &ctx, nil
 }
+
+func (ctx *context) Close() {
+	ctx.db.Close()
+	ctx.redis.Close()
+}
