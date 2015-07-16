@@ -16,8 +16,8 @@ func monitorHosts() {
 	if ctx != nil {
 		defer ctx.Close()
 	}
-	errLogger := log.New(os.Stderr, "MonitorHosts", 0)
-	outLogger := log.New(os.Stdout, "MonitorHosts", 0)
+	errLogger := log.New(os.Stderr, "MonitorHosts", log.LstdFlags)
+	outLogger := log.New(os.Stdout, "MonitorHosts", log.LstdFlags)
 	outLogger.Println("Started")
 	defer outLogger.Println("Finished")
 	if err != nil {
@@ -45,8 +45,8 @@ func cleanRedisInstances() {
 	if ctx != nil {
 		defer ctx.Close()
 	}
-	errLogger := log.New(os.Stderr, "CleanRedisInstances", 0)
-	outLogger := log.New(os.Stdout, "CleanRedisInstances", 0)
+	errLogger := log.New(os.Stderr, "CleanRedisInstances", log.LstdFlags)
+	outLogger := log.New(os.Stdout, "CleanRedisInstances", log.LstdFlags)
 	outLogger.Println("Started")
 	defer outLogger.Println("Finished")
 	if err != nil {
