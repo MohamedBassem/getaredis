@@ -2,7 +2,7 @@
 
 A one click, docker based, auto scaling, Redis host implemented in Go and hosted on Digitalocean.
 
-![Homepage](https://raw.githubusercontent.com/MohamedBassem/getaredis/master/imgs/GetARedisHomePage.png)
+![Homepage](https://raw.githubusercontent.com/MohamedBassem/getaredis/master/imgs/GetARedisHomePage.gif)
 
 ##Tags
 
