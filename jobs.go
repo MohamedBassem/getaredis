@@ -21,21 +21,24 @@ func MonitorHosts(ctx *context) (startedHosts bool, deletedHosts []string, err e
 	hosts := ctx.ListHosts()
 	deletedHosts = make([]string, 0)
 	zeros := 0
+	mini := 1000000
 	for _, host := range hosts {
 		if host.NumberOfContainers == 0 {
 			zeros++
+		} else if host.NumberOfContainers < mini {
+			mini = host.NumberOfContainers
 		}
 	}
-	if zeros == 0 {
+	if zeros == 0 && mini > ctx.config.MaxContainersPerHost/2 {
 		err = ctx.NewHostFromImage()
 		if err != nil {
 			return
 		}
 		startedHosts = true
 		return
-	} else if zeros > 1 {
+	} else if zeros > 0 {
 		for _, host := range hosts {
-			if zeros == 1 {
+			if mini > ctx.config.MaxContainersPerHost/2 && zeros == 1 {
 				break
 			}
 			if host.NumberOfContainers == 0 {

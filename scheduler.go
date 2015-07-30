@@ -5,7 +5,7 @@ import "errors"
 // Returns the ip for the host which can hold this container
 func (ctx *context) scheduleNewContainer() (publicIP, privateIP string, err error) {
 	hosts := ctx.ListHosts()
-	maximumNumberOfContainers := 40
+	maximumNumberOfContainers := ctx.config.MaxContainersPerHost
 	maximumNumber := -1
 	chosenHost := -1
 	for i, host := range hosts {

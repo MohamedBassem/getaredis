@@ -32,3 +32,5 @@ maxInstanceTime: 12
 # Maximum number of instances per IP
 maxInstancesPerIP: 6
 
+# Maximum number of containers per Host
+maxContainersPerHost: 40
