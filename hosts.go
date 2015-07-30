@@ -58,6 +58,7 @@ func (ctx *context) NewHost() error {
 	userData := `#cloud-config
 runcmd:
   - docker pull redis
+  - apt-get update
   - apt-get install -y supervisor nginx apache2-utils
   - echo 'DOCKER_OPTS=$DOCKER_OPTS" -H unix:///var/run/docker.sock -H tcp://127.0.0.1:2375"' >> /etc/default/docker
   - service docker restart
