@@ -51,7 +51,7 @@ func (ctx *context) ListHosts() []Host {
 	return hosts
 }
 
-func (ctx *context) NewHost() error {
+func (ctx *context) NewHostFromConfig() error {
 	redisIP := strings.Split(ctx.config.RedisAddress, ":")[0]
 	redisPort := strings.Split(ctx.config.RedisAddress, ":")[1]
 	dropletName := "getaredis-server-" + generateRandomString(10)
@@ -119,6 +119,56 @@ write_files:
 		},
 		UserData:          userData,
 		PrivateNetworking: true,
+		SSHKeys:           []godo.DropletCreateSSHKey{*sshKey},
+	}
+
+	_, _, err := ctx.digitalocean.Droplets.Create(createRequest)
+	return err
+}
+
+func (ctx *context) NewHostFromImage() error {
+	redisIP := strings.Split(ctx.config.RedisAddress, ":")[0]
+	redisPort := strings.Split(ctx.config.RedisAddress, ":")[1]
+	dropletName := "getaredis-server-" + generateRandomString(10)
+	userData := `#cloud-config
+runcmd:
+  - service docker restart
+  - htpasswd -b -c /etc/nginx/docker_auth/.htpasswd %v %v
+  - service nginx reload
+write_files:
+  - path: /usr/local/bin/service_discovery
+    permissions: '0755'
+    content: |
+        #!/bin/bash
+        (
+          PUBLIC_IP=$(curl http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)
+          PRIVATE_IP=$(curl http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/address)
+          NODE_NAME=%v
+          echo "AUTH %v";
+          while true; do
+            NUMBER_OF_CONTAINERS=$(($(docker ps | wc -l) - 1))
+            echo "SET server:$NODE_NAME '{\"PublicIP\":\"$PUBLIC_IP\",\"PrivateIP\":\"$PRIVATE_IP\",\"Name\":\"$NODE_NAME\",\"NumberOfContainers\":$NUMBER_OF_CONTAINERS}'";
+            echo "EXPIRE server:$NODE_NAME 10";
+            sleep 4;
+          done
+        ) | telnet %v %v
+`
+	userData = fmt.Sprintf(userData, ctx.config.Docker["user"], ctx.config.Docker["password"], dropletName, ctx.config.RedisPassword, redisIP, redisPort)
+
+	var sshKey *godo.DropletCreateSSHKey
+	if ctx.config.DropletSSHKeyID != -1 {
+		sshKey = &godo.DropletCreateSSHKey{ID: ctx.config.DropletSSHKeyID}
+	}
+
+	createRequest := &godo.DropletCreateRequest{
+		Name:   dropletName,
+		Region: "nyc3",
+		Size:   "512mb",
+		Image: godo.DropletCreateImage{
+			ID: 12949456,
+		},
+		PrivateNetworking: true,
+		UserData:          userData,
 		SSHKeys:           []godo.DropletCreateSSHKey{*sshKey},
 	}
 

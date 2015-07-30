@@ -27,7 +27,7 @@ func MonitorHosts(ctx *context) (startedHosts bool, deletedHosts []string, err e
 		}
 	}
 	if zeros == 0 {
-		err = ctx.NewHost()
+		err = ctx.NewHostFromImage()
 		if err != nil {
 			return
 		}
