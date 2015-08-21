@@ -1,0 +1,73 @@
+#cloud-config
+runcmd:
+#Installing MySQL
+  - export MYSQL_PASSWORD=
+  - export REDIS_PASSWORD=
+  - export DATABASE_NAME=getaredis
+#Installing MySQL
+  - apt-get update
+  - echo mysql-server mysql-server/root_password password $MYSQL_PASSWORD | sudo debconf-set-selections
+  - echo mysql-server mysql-server/root_password_again password $MYSQL_PASSWORD | sudo debconf-set-selections
+  - apt-get install -y mysql-server mysql-client
+#Allowing MySQL remote access
+  - sed -i 's/\(bind-address.*=.*\)127.0.0.1/\1 0.0.0.0/g' /etc/mysql/my.cnf
+  - echo "CREATE DATABASE $DATABASE_NAME; GRANT ALL ON $DATABASE_NAME.* TO root@'%' IDENTIFIED BY '$MYSQL_PASSWORD';" > /tmp/mysqltmp
+  - mysql -p$MYSQL_PASSWORD < /tmp/mysqltmp
+  - rm /tmp/mysqltmp
+  - service mysql restart
+#Installing Redis
+  - add-apt-repository -y ppa:rwky/redis
+  - apt-get update
+  - apt-get install -y redis-server
+  - echo "requirepass $REDIS_PASSWORD" >> /etc/redis/redis.conf
+  - service redis-server restart
+#Installing htop
+  - apt-get install -y htop
+#Installing Go
+  - apt-get update
+  - apt-get install -y git wget
+  - wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+  - tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
+  - echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
+  - mkdir /root/go
+  - export HOME=/root
+  - echo 'export GOROOT=/usr/local/go' >> /root/.bashrc
+  - echo 'export GOPATH=$HOME/go' >> /root/.bashrc
+  - echo 'export PATH=$PATH:$GOPATH/bin' >> /root/.bashrc
+  - export GOPATH=/root/go
+  - export GOROOT=/usr/local/go
+#Pulling the server repo
+  - /usr/local/go/bin/go get github.com/MohamedBassem/getaredis/...
+#Installing supervisor and nginx
+  - apt-get install -y supervisor nginx
+  - rm -r /etc/nginx/sites-enabled /etc/nginx/sites-available
+  - service nginx restart
+# You will need to upload the config file manually
+write_files:
+  - path: /etc/supervisor/conf.d/go_jobs.conf
+    content: |
+        [program:go_jobs]
+        command=/root/go/bin/getaredis-jobs --config /root/config.yml
+        autostart=true
+        autorestart=true
+        stderr_logfile=/var/log/go_jobs.err.log
+        stdout_logfile=/var/log/go_jobs.out.log
+
+        [program:go_server]
+        directory:/root/go/src/github.com/MohamedBassem/getaredis/cmd/getaredis-server
+        command=/root/go/bin/getaredis-server --config /root/config.yml
+        autostart=true
+        autorestart=true
+        stderr_logfile=/var/log/getaredis-server.err.log
+        stdout_logfile=/var/log/getaredis-server.out.log
+  - path: /etc/nginx/conf.d/server.conf
+    content: |
+        server {
+          listen 80;
+          location / {
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header Host $host;
+            proxy_pass http://127.0.0.1:8080;
+          }
+        }
